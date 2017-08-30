@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include 'inc/login.php';
+include 'lib/login.php';
 ?>
 
 <!DOCTYPE html>
@@ -53,8 +53,8 @@ Mot de Passe<input class="form-control" type="password" name="pw" required>
 </form>
 </div>
 <div class="col-md-6 col-md-offset-3">
-<iframe src="inc/conversation.php"></iframe>
-<iframe src="inc/input.php" id="input" frameBorder="0"></iframe>
+<iframe src="lib/conversation.php"></iframe>
+<iframe src="lib/input.php" id="input" frameBorder="0"></iframe>
 </div>
 
 <?php endif; ?>
