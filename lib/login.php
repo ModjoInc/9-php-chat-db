@@ -1,6 +1,10 @@
-<?php
+<?
 
 	include 'pdo.php';
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+
 
 	if (empty($_POST)) {
 		return;
@@ -31,7 +35,7 @@
 				return;
 			}
 
-			$check = $db->prepare("SELECT pw FROM user WHERE pseudo = ?");
+			$check = $conn->prepare("SELECT pw FROM user WHERE pseudo = ?");
 			$args_check = array($inputs['pseudo']);
 
 			try {
@@ -75,14 +79,14 @@
 
 			return;
 			// Check if pseudo or email already exist in db
-			$check = $db->prepare("SELECT id FROM users WHERE pseudo = :pseudo OR email = :email");
+			$check = $conn->prepare("SELECT id FROM user WHERE pseudo = :pseudo OR email = :email");
 			$args_check = array(
 				'pseudo'=>$inputs['pseudo'],
 				'email'=>$inputs['email']
 			);
 
 			// Insert user
-			$insert = $db->prepare("INSERT INTO users (pseudo, email, pw) VALUES (:pseudo, :email, :pw)");
+			$insert = $conn->prepare("INSERT INTO user (pseudo, email, pw) VALUES (:pseudo, :email, :pw)");
 			$args_insert = array(
 				'pseudo' => $inputs['pseudo'],
 				'email' => $inputs['email'],
@@ -151,7 +155,7 @@
 
 		if ( in_array(null || false , $inputs ) ) {
 
-			foreach ($inputs as $key => $value) {
+			foreach ($inputs as $key=>$value) {
 				if( !$value || empty($value) ) {
 					$error .= "Le champ ".$key.' n\'est pas valide. ';
 				}
@@ -160,3 +164,4 @@
 		}
 
 	}
+?>

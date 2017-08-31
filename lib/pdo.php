@@ -1,7 +1,14 @@
-<?php
+<?
+include('lib/connect.php');
 
-	try {
-		$db = new PDO('mysql:host=localhost;dbname=mini_chat;charset=utf8', 'root', 'mvdtvw28', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-	} catch (Exception $e){
-		die('Error: '.$e->getMessage());
-	}
+try {
+   $conn = new PDO("mysql:host=$servername;dbname=mini_chat", $username, $password);
+   // set the PDO error mode to exception
+   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    "Connection à la BD OK";
+   }
+catch(PDOException $e)
+   {
+   "Connection failed: " . $e->getMessage();
+   }
+?>
