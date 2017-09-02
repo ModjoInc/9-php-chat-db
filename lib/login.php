@@ -1,167 +1,98 @@
-<?
+<?php
+include('errors.php');
+include('pdo.php');
+// Start the session
+session_start();
 
-	include 'pdo.php';
-  ini_set('display_errors', 1);
-  ini_set('display_startup_errors', 1);
-  error_reporting(E_ALL);
+$postMesg = file_get_contents('messages.html');
+$inscription = file_get_contents('login.html');
 
+  // interruption de session
 
-	if (empty($_POST)) {
-		return;
-	}
-
-	$error = "";
-	$inputs = [];
-
-	// check if there are any input empty
-	foreach ($_POST as $key => $value) {
-		if( empty( trim($value) ) ) {
-			$error .= 'Vous avez oublié d\'indiquer votre '.$key;
-		}
-	}
-
-	if ( !empty($error) ) {
-		return;
-	}
-
-	switch ($_POST['action']) {
-
-		case 'signin':
-
-			// validation + sanitization
-			filter_inputs();
-
-			if ( !empty($error) ) {
-				return;
-			}
-
-			$check = $conn->prepare("SELECT pw FROM user WHERE pseudo = ?");
-			$args_check = array($inputs['pseudo']);
-
-			try {
-
-				$check->execute($args_check);
-				$hash = $check->fetchColumn();
-
-				if ($hash) {
-
-					if (password_verify($inputs['pw'], $hash)) {
-
-					    $_SESSION['pseudo'] = $inputs['pseudo'];
-					    $_SESSION['pw'] = $hash;
-
-					} else {
-
-					    $error = 'Votre mot de passe n\'est pas valide, veuillez réessayer';
-
-					}
-
-				} else {
-
-					$error = 'Vous n\'êtes pas encore enregistré? veuillez vous inscrire d\'abord';
-
-				}
-
-			} catch (Exception $e){
-				die('Error: '.$e->getMessage());
-			}
-
-			break;
-
-		case 'signup':
-
-			// validation + sanitization
-			filter_inputs('signup');
-
-			if ( !empty($error) ) {
-				return;
-			}
-
-			return;
-			// Check if pseudo or email already exist in db
-			$check = $conn->prepare("SELECT id FROM user WHERE pseudo = :pseudo OR email = :email");
-			$args_check = array(
-				'pseudo'=>$inputs['pseudo'],
-				'email'=>$inputs['email']
-			);
-
-			// Insert user
-			$insert = $conn->prepare("INSERT INTO user (pseudo, email, pw) VALUES (:pseudo, :email, :pw)");
-			$args_insert = array(
-				'pseudo' => $inputs['pseudo'],
-				'email' => $inputs['email'],
-				'pw' => password_hash($inputs['pw'], PASSWORD_DEFAULT)
-			);
-
-			try {
-
-				$check->execute($args_check);
-				$user_exist = $check->fetchColumn();
-
-				if ($user_exist) {
-
-					$error = 'Cet utilisateur existe déjà, veuillez vous connecter';
-
-				} else {
-
-					$res = $insert->execute($args_insert);
-
-					if($res) {
-						// if user registed in db save value in session
-						$_SESSION['pseudo'] = $inputs['pseudo'];
-						$_SESSION['pw'] = password_hash($inputs['pw'], PASSWORD_DEFAULT);
-					}
-				}
-
-			} catch (Exception $e){
-				die('Error: '.$e->getMessage());
-			}
-
-			break;
-
-		case 'signout':
-
-			unset($_SESSION['pw']);
-
-			break;
-
-		default:
-			# code...
-			break;
-	}
-
-	function show_error() {
-		global $error;
-
-		if($error) {
-			return '<p>'.$error.'</p>';
+	if(isset($_POST['disconnect'])){
+			session_destroy();
 		}
 
-	}
+// Si utilisateur connu
 
-	function filter_inputs($action = 'signin') {
-		global $error, $inputs;
+	if(isset($_SESSION['userId'])){
+		if(isset($_POST['message'])){
+			$userId = $_SESSION['userId'];
+			$message = $_POST['message'];
+			$req = $conn->prepare("INSERT INTO message(content, user_id) VALUES (?, ?) ");
+			$req->execute(array($message, $userId));
+		};
+    echo $_SESSION['pseudo'].' dit:';
+  	echo $postMesg;
+  	}	else {
+  		if (isset($_POST['LogIn']) OR isset($_POST['SignUp'])){
+  			$msg = '';
+  			if (isset($_POST['LogIn'])){
+  				$pseudo = $_POST['pseudo'];
+  				$password = $_POST['pw'];
+  				$req = $conn->query("SELECT * FROM user WHERE pseudo = '$pseudo' ");
+  				$sql_data= $req->fetchAll(PDO::FETCH_ASSOC);
+   				// Vérification email et password
+  				if($pseudo == $sql_data[0]['pseudo']){
+  					if(password_verify($password, $sql_data[0]['pw'])){
+  						$_SESSION['userId'] = $sql_data[0]['id'];
+  						$_SESSION['pseudo'] = $sql_data[0]['pseudo'];
+  					} else {
+  						$msg = 'Mot de passe incorrect. Réessayer.';
+  					}
+  				} else {
+  					$msg = 'Email inconnu. Veuillez vous inscrire';
+  				}
+  			}
+  			// tentative de Sign Up ?
+  			if (isset($_POST['SignUp'])){
+  				$pseudo = $_POST['pseudo'];
+          $email = $_POST['email'];
+  				$password1 = $_POST['pwd1'];
+  				$password2 = $_POST['pwd2'];
+  				// Vérifier que l'email est pas connu en DB$password
+  				$req = $conn->query("SELECT * FROM user WHERE pseudo = '$pseudo' ");
+  				$sql_data= $req->fetchAll(PDO::FETCH_ASSOC);
+  				if(isset($sql_data[0]['pseudo'])){
+  					$msg = "Pseudo déjà utilisé. Veuillez utiliser un autre pseudo ou vous connecter";
+  					// Vérifier que les password sont identiques
+  					if($password1 != $password2){
+  						$msg = "Veuilez entrer deux mots de passe identiques.";
+  					}
+  				} else { // Si c'est OK, sanitizer, valider hasher le pwd et faire l'insertion en DB
+  					$pseudo = filter_var($pseudo, FILTER_SANITIZE_SPECIAL_CHARS);
+  					if ($pseudo) {
+  						$email = filter_var($email, FILTER_VALIDATE_EMAIL);
+  						if ($email) {
+  							$password = password_hash($password1, PASSWORD_DEFAULT);
+                var_dump($password);
+  							$req = $conn->prepare("INSERT INTO user(pseudo, email, pw) VALUES (?, ?, ?) ");
+  							$req->execute(array($pseudo, $email, $password));
+  							// Récupérer ensuite l'ID et pseudo pour enregistrement de session
+  							$req = $conn->query("SELECT * FROM user WHERE pseudo = '$pseudo' ");
+  							$sql_data= $req->fetchAll(PDO::FETCH_ASSOC);
+  							$_SESSION['userId'] = $sql_data[0]['id'];
+  							$_SESSION['pseudo'] = $sql_data[0]['pseudo'];
+  						} else {
+  							$msg = "Veuillez entrer un email valide";
+  						}
+  					} else {
+  						$msg = "Veuillez entrer un nom valide";
+  					}
+  				}
+  			}
+  			// envoi de messages
+  			if($msg != '') {
+  				echo $msg;
+          echo $inscription;
+  			} else {
+          echo $_SESSION['pseudo'].' dit:';
+        	echo $postMesg;
+  			}
+  		} else { // Sinon, proposition de login ou signup
+        echo $inscription;
+  		}
+  	}
 
-		$args = array(
-			'pseudo' => FILTER_SANITIZE_STRING,
-			'pw' => FILTER_SANITIZE_STRING // try FILTER_VALIDATE_REGEXP
-		);
 
-		if ($action == 'signup') {
-			$args['email'] = FILTER_VALIDATE_EMAIL;
-		}
-
-		$inputs = filter_input_array(INPUT_POST, $args );
-
-		if ( in_array(null || false , $inputs ) ) {
-
-			foreach ($inputs as $key=>$value) {
-				if( !$value || empty($value) ) {
-					$error .= "Le champ ".$key.' n\'est pas valide. ';
-				}
-			}
-
-		}
-
-	}
 ?>

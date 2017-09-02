@@ -1,25 +1,35 @@
-<?
-include 'pdo.php';
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="refresh" content="5">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<title>Document</title>
+</head>
+<body>
 
-	$req = $conn->query("SELECT * FROM (SELECT message.id AS id, message.content AS content, HOUR(message.date) AS hour, MINUTE(message.date) AS minutes, user.pseudo AS user FROM message INNER JOIN user ON message.user_id = user.id ORDER BY message.id DESC LIMIT 10) AS new ORDER BY id ASC");
+<?php
+
+include('errors.php');
+include('pdo.php');
+
+  $req = $conn->query('SELECT * FROM message INNER JOIN user ON message.user_id = user.id ');
+
+	$sql_data= $req->fetchAll(PDO::FETCH_ASSOC);
+	$length = count($sql_data);
+	for ($i=0; $i < $length; $i++) {
+		echo '<p>';
+		echo '<span class="pseudo">@'.$sql_data[$i]['pseudo'].'</span> dit : '.$sql_data[$i]['content'];
+		echo '</p>';
+		// echo '<p id="lastReceived"> Dernier message : ';
+		// echo '<span class="time">'.$sql_data[$length-1]['date'].'</span><br>';
+		// echo '<span class="pseudo">@'.$sql_data[$i]['pseudo'].'</span> dit : '.$sql_data[$length-1]['content'];
+		// echo '</p>';
+  }
 
 ?>
 
 
-		<ul>
-		<?
 
-		while ($row = $req -> fetch()) : ?>
-
-			<li>
-				<strong><? $row['user']; ?></strong>
-				[<? $row['hour']; ?>:<? $row['minutes']; ?>]
-				<? $row['content']; ?>
-			</li>
-
-		<? endwhile; ?>
-
-		</ul>
+</body>
+</html>
