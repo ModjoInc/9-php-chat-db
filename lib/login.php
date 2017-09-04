@@ -4,7 +4,6 @@
 
 
 <?php
-include('errors.php');
 include('pdo.php');
 // Start the session
 session_start();
@@ -17,7 +16,6 @@ $inscription = file_get_contents('login.html');
 
   if(isset($_POST['disconnect'])){
       session_destroy();
-      echo "@".$_SESSION['pseudo']."has left the chat";
     }
 
 // Si utilisateur connu
@@ -30,8 +28,7 @@ $inscription = file_get_contents('login.html');
       $req->execute(array($message, $userId));
     };
     echo '@'.$_SESSION['pseudo'];
-    echo $content;
-    // echo $postMesg;
+    echo $postMesg;
     }  else {
       if (isset($_POST['LogIn']) OR isset($_POST['SignUp'])){
         $msg = '';
@@ -52,7 +49,7 @@ $inscription = file_get_contents('login.html');
             $msg = 'Email inconnu. Veuillez vous inscrire';
           }
         }
-        // tentative de Sign Up ?
+        // tentative de Sign Up...
         if (isset($_POST['SignUp'])){
           $pseudo = $_POST['pseudo'];
           $email = $_POST['email'];
@@ -95,8 +92,7 @@ $inscription = file_get_contents('login.html');
           echo $inscription;
         } else {
           echo $_SESSION['pseudo'].' dit:';
-          echo $content;
-          // echo $postMesg;
+          echo $postMesg;
         }
       } else { // Sinon, proposition de login ou signup
         echo $inscription;

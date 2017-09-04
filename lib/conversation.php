@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="../assets/css/style.css">
+<meta http-equiv="refresh" content="2" />
 <div id="chat">
 
 
 <?php
 
-include('errors.php');
 include('pdo.php');
 
 
@@ -16,10 +16,6 @@ include('pdo.php');
     echo '<p class="text">';
     echo '@'.$sql_data[$i]['pseudo'].' dit : '.$sql_data[$i]['content'];
     echo '</p>';
-    // echo '<p id="lastReceived"> Dernier message : ';
-    // echo '< class="time">'.$sql_data[$length-1]['date'].'</><br>';
-    // echo '< class="pseudo">@'.$sql_data[$i]['pseudo'].'</> dit : '.$sql_data[$length-1]['content'];
-    // echo '</p>';
   }
 
 ?>
