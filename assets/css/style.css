@@ -1,1 +1,48 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400|Roboto:300,400");
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
 
+body {
+  background-color: #f2f2f2; }
+
+#wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr;
+  grid-template-areas: ". login conversation"; }
+  #wrapper #conversation {
+    grid-area: conversation;
+    justify-self: start;
+    box-shadow: 0px 1px 2px #888888;
+    margin: 10px 5px;
+    padding: 10px 20px; }
+  #wrapper #login {
+    grid-area: login;
+    justify-self: end;
+    box-shadow: 0px 1px 2px #888888;
+    margin: 10px 5px;
+    padding: 10px 20px; }
+
+iframe {
+  border: none; }
+
+#chat {
+  padding: 10px 0; }
+
+.text {
+  border: 1px solid #fff;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 10px;
+  margin: 20px 20px;
+  font-family: "Roboto", sans-serif; }
+
+#box {
+  padding-top: 5px;
+  font-family: "Montserrat", sans-serif; }
+
+.btn {
+  width: 100%; }
+
+/*# sourceMappingURL=style.css.map */

@@ -11,16 +11,17 @@ include('errors.php');
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="col-md-6 col-md-offset-3">
-      <iframe title="messages" src="lib/conversation.php" width="600" height="300">
-	      <p>Your browser does not support iframes.</p>
-	    </iframe>
-	    <iframe title="login" src="lib/login.php" width="600" height="300">
- 	      <p>Your browser does not support iframes.</p>
+  <div id="wrapper">
+    <div id="conversation">
+      <iframe title="messages" src="lib/conversation.php" width="500" height="400">
+        <p>Your browser does not support iframes.</p>
       </iframe>
     </div>
-
+    <div id="login">
+      <iframe title="login" src="lib/login.php" width="500" height="400">
+  	      <p>Your browser does not support iframes.</p>
+      </iframe>
+    </div>
   </div>
 </body>
 </html>
