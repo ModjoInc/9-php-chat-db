@@ -18,7 +18,7 @@ include('errors.php');
       </iframe>
     </div>
     <div id="login">
-      <iframe title="login" src="lib/login.php" width="500" height="400">
+      <iframe title="login" src="lib/login.php" width="300" height="600">
   	      <p>Your browser does not support iframes.</p>
       </iframe>
     </div>
